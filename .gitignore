@@ -1,0 +1,40 @@
+# Dependencias y módulos generados por npm
+/node_modules
+
+# Dependencias y módulos generados por Yarn
+/yarn-error.log
+/yarn.lock
+
+# Archivos y carpetas específicos de desarrollo local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+/dist
+/build
+
+# Archivos de compilación y caché de webpack
+/.webpack
+/.cache
+
+# Dependencias y módulos generados por Babel
+/.babelrc
+/.babel-cache.json
+
+# Dependencias y módulos generados por Jest
+/coverage
+
+# Dependencias y módulos generados por Storybook
+/.out
+
+# Dependencias y módulos generados por Next.js
+/.next
+/out
+
+# Dependencias y módulos generados por Create React App
+/.env
+
+# Archivos de registro
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

@@ -1,100 +1,105 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Text, View, SafeAreaView, ActivityIndicator } from 'react-native';
+import {
+  ArrowSmallDownIcon,
+  ChevronDownIcon,
+} from 'react-native-heroicons/solid';
 import axios from 'axios';
-import Article from './components/Article';
-import FormCode from './components/FormCode';
-
+import Item from './components/Item';
+import BarcodeForm from './components/BarcodeForm';
+import Carousel from './components/Carousel';
 
 export default function App() {
   const [article, setArticle] = useState({});
-  const [barcode, setbarcode] = useState('');
-  const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
+  const [barcode, setBarcode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [articleNotFound, setArticleNotFound] = useState(false);
+  const [modal, setModal] = useState(false);
+
+  useEffect(() => {
+    let timeoutId;
+
+    const resetState1 = () => setModal(true); // Mostrar modal cuando barcode no se ha modificado en x tiempo
+
+    const resetTimeout = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(resetState1, 30000);
+    };
+
+    resetTimeout(); // Iniciar el timeout al principio o cuando barcode cambie
+
+    return () => clearTimeout(timeoutId); // Limpiar el timeout cuando el componente se desmonte
+  }, [barcode]);
 
   useEffect(() => {
     if (barcode !== '') {
+      setModal(false);
       getArticle();
     }
   }, [barcode]);
 
   const getArticle = async () => {
-    setScanned(true);
     try {
-      const url = `http://192.168.100.4:5008/api/article?barcode=${barcode}`; //IPV4 Address
+      setLoading(true);
+      const address = '192.168.100.4'; //10.254.253.38
+      const url = `http://${address}:5008/api/article?barcode=${barcode}`; //IPV4 Address
       const response = await axios(url);
       setArticle(response.data.article[0]);
     } catch (error) {
+      if (error.response.status === 404) setArticleNotFound(true);
       setArticle({});
+      setBarcode('');
+    } finally {
+      setLoading(false);
+      setBarcode('');
+
+      setTimeout(() => {
+        setArticle({});
+        setArticleNotFound(false);
+      }, 3000);
     }
-    setTimeout(() => {
-      setScanned(false);
-      setbarcode('');
-    }, 3000);
-  };
-
-  const handleSubmit = async () => {
-    await getArticle();
-    setTimeout(() => {
-      setScanned(false);
-      setbarcode('');
-    }, 3000);
-  };
-
-  const askForCameraPermission = () => {
-    (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  };
-  // Request Camera Permission
-  useEffect(() => {
-    askForCameraPermission();
-  }, []);
-  // What happens when we scan the bar code
-  const handleBarCodeScanned = ({ type, data }) => {
-    //setScanned(true);
-    setbarcode(data);
-    console.log('Type: ' + type + '\nData: ' + data);
   };
 
   return (
     <>
-      <SafeAreaView className="flex-1 bg-yellow-400 px-10">
-        <Text className="text-center text-2xl font-bold mt-20">
-          Consulta el precio aquí
+      <Carousel barcode={barcode} setBarcode={setBarcode} modal={modal} />
+
+      <LinearGradient colors={['#757F9A', '#D7DDE8']} className="flex-1">
+        <StatusBar style="auto" hidden={true} />
+        <Text className="text-center text-6xl font-semibold mt-20 text-zinc-800">
+          Verificador de Precios
         </Text>
 
-        <StatusBar style="auto" />
-
-        <FormCode
-          handleSubmit={handleSubmit}
-          barcode={barcode}
-          setbarcode={setbarcode}
-        />
-
-        { scanned ?        
-          <ActivityIndicator size="large" color="black" className="mt-10" />
-        : article.DESCRIPCION ? (
-          <Article article={article} />
-        ) : (
-          <Text className="text-center mt-10 text-xl">No hay Resultados</Text>
-        )}
-      </SafeAreaView>
-
-      <View style={{backgroundColor: 'rgb(250, 204, 21)' }}>
-        <View style={{ position: 'absolute', top: -1000 }}>
-          <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={{ height: 1, width: 1 }}
-          />
+        <BarcodeForm barcode={barcode} setBarcode={setBarcode} />
+        <View className="mt-10">
+          {loading ? (
+            <ActivityIndicator
+              size={55}
+              color="#393939"
+              style={{ marginTop: 10 }}
+            />
+          ) : (
+            <>
+              {Object.keys(article).length > 0 ? (
+                <Item item={article} />
+              ) : (
+                <>
+                  <Text className="text-4xl text-center text-zinc-800">
+                    {articleNotFound
+                      ? 'No hay resultados'
+                      : 'Escanee su artículo aquí'}
+                  </Text>
+                  <View className="items-center mt-60">
+                    <ChevronDownIcon fill="#393939" size={150} />
+                  </View>
+                </>
+              )}
+            </>
+          )}
         </View>
-      </View>
+      </LinearGradient>
     </>
   );
 }
-
-
-
-

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, TextInput } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const BarcodeForm = ({ setBarcode, barcode }) => {
   const textInputRef = useRef(null);
@@ -15,11 +16,11 @@ const BarcodeForm = ({ setBarcode, barcode }) => {
 
     typingTimer.current = setTimeout(() => {
       setBarcode(data);
-    }, 100);
+    }, 300);
   };
 
   return (
-    <View className="flex justify-center flex-row items-center gap-4 p-10 mt-10">
+    <LinearGradient colors={['#182848', '#182848']}>
       <TextInput
         ref={textInputRef}
         value={barcode}
@@ -29,7 +30,7 @@ const BarcodeForm = ({ setBarcode, barcode }) => {
         className="text-transparent"
         showSoftInputOnFocus={false}
       />
-    </View>
+    </LinearGradient>
   );
 };
 

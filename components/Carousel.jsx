@@ -8,13 +8,20 @@ import {
   View,
   useWindowDimensions,
   Animated,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import BarcodeForm from './BarcodeForm';
 
-const Carousel = ({ barcode, setBarcode, modal }) => {
+const Carousel = ({ barcode, setBarcode, modalCarousel }) => {
   const { width } = useWindowDimensions();
   const flatListRef = useRef(null);
   const currentIndexRef = useRef(0);
+  const getItemLayout = (_, index) => ({
+    length: width,
+    offset: width * index,
+    index,
+  });
+
   const data = [
     {
       id: 1,
@@ -49,7 +56,11 @@ const Carousel = ({ barcode, setBarcode, modal }) => {
   };
 
   return (
-    <Modal animationType="fade" visible={modal} statusBarTranslucent={true}>
+    <Modal
+      animationType="fade"
+      visible={modalCarousel}
+      statusBarTranslucent={true}
+    >
       <StatusBar hidden={true} />
       <View>
         <FlatList
@@ -57,7 +68,9 @@ const Carousel = ({ barcode, setBarcode, modal }) => {
           horizontal
           showsHorizontalScrollIndicator
           pagingEnabled
+          //scrollEnabled={false}
           bounces={false}
+          getItemLayout={getItemLayout}
           data={data}
           renderItem={({ item }) => (
             <View style={{ width }}>

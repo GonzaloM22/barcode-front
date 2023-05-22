@@ -1,11 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text, View, SafeAreaView, ActivityIndicator } from 'react-native';
-import {
-  ArrowSmallDownIcon,
-  ChevronDownIcon,
-} from 'react-native-heroicons/solid';
+import { Text, View, ActivityIndicator } from 'react-native';
+import { ChevronDownIcon } from 'react-native-heroicons/solid';
 import axios from 'axios';
 import Item from './components/Item';
 import BarcodeForm from './components/BarcodeForm';
@@ -16,12 +13,13 @@ export default function App() {
   const [barcode, setBarcode] = useState('');
   const [loading, setLoading] = useState(false);
   const [articleNotFound, setArticleNotFound] = useState(false);
-  const [modal, setModal] = useState(false);
+  const [modalCarousel, setModalCarousel] = useState(false);
+  const [modalItem, setModalItem] = useState(false);
 
   useEffect(() => {
     let timeoutId;
 
-    const resetState1 = () => setModal(true); // Mostrar modal cuando barcode no se ha modificado en x tiempo
+    const resetState1 = () => setModalCarousel(true); // Mostrar modal cuando barcode no se ha modificado en x tiempo
 
     const resetTimeout = () => {
       clearTimeout(timeoutId);
@@ -35,7 +33,6 @@ export default function App() {
 
   useEffect(() => {
     if (barcode !== '') {
-      setModal(false);
       getArticle();
     }
   }, [barcode]);
@@ -47,8 +44,11 @@ export default function App() {
       const url = `http://${address}:5008/api/article?barcode=${barcode}`; //IPV4 Address
       const response = await axios(url);
       setArticle(response.data.article[0]);
+      setModalCarousel(false);
+      setModalItem(true);
     } catch (error) {
       if (error.response.status === 404) setArticleNotFound(true);
+      setModalCarousel(false);
       setArticle({});
       setBarcode('');
     } finally {
@@ -56,50 +56,45 @@ export default function App() {
       setBarcode('');
 
       setTimeout(() => {
+        setModalItem(false);
         setArticle({});
         setArticleNotFound(false);
-      }, 3000);
+      }, 5000);
     }
   };
 
   return (
     <>
-      <Carousel barcode={barcode} setBarcode={setBarcode} modal={modal} />
+      <StatusBar style="auto" hidden={true} />
+      <Carousel
+        barcode={barcode}
+        setBarcode={setBarcode}
+        modalCarousel={modalCarousel}
+      />
 
-      <LinearGradient colors={['#757F9A', '#D7DDE8']} className="flex-1">
-        <StatusBar style="auto" hidden={true} />
-        <Text className="text-center text-6xl font-semibold mt-20 text-zinc-800">
-          Verificador de Precios
-        </Text>
+      <Item loading={loading} item={article} modalItem={modalItem} />
 
-        <BarcodeForm barcode={barcode} setBarcode={setBarcode} />
-        <View className="mt-10">
-          {loading ? (
-            <ActivityIndicator
-              size={55}
-              color="#393939"
-              style={{ marginTop: 10 }}
-            />
-          ) : (
-            <>
-              {Object.keys(article).length > 0 ? (
-                <Item item={article} />
-              ) : (
-                <>
-                  <Text className="text-4xl text-center text-zinc-800">
-                    {articleNotFound
-                      ? 'No hay resultados'
-                      : 'Escanee su artículo aquí'}
-                  </Text>
-                  <View className="items-center mt-60">
-                    <ChevronDownIcon fill="#393939" size={150} />
-                  </View>
-                </>
-              )}
-            </>
-          )}
+      <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1">
+        <View>
+          <View>
+            {!articleNotFound ? (
+              <View>
+                <Text className="text-9xl text-center text-gray-200 pt-52">
+                  Escanee su producto aqui
+                </Text>
+                <View className="items-center mt-8">
+                  <ChevronDownIcon fill="#FFFFFF" size={250} />
+                </View>
+              </View>
+            ) : (
+              <Text className="text-9xl text-center text-gray-200 pt-52">
+                No hay resultados
+              </Text>
+            )}
+          </View>
         </View>
       </LinearGradient>
+      <BarcodeForm barcode={barcode} setBarcode={setBarcode} />
     </>
   );
 }

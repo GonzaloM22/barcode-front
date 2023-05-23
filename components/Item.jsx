@@ -1,11 +1,35 @@
-import { View, Text, Modal, Image, ActivityIndicator } from 'react-native';
+import { useEffect, useRef } from "react";
+import { View, Image, StyleSheet, Animated  } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Modal, Portal, Text, PaperProvider } from 'react-native-paper';
 
 const Item = ({ item, modalItem, loading }) => {
   const image = require('../assets/img/logo.png');
 
+  const fadeAnimation = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (modalItem) {
+      Animated.timing(fadeAnimation, {
+        toValue: 1,
+        duration: 200, 
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(fadeAnimation, {
+        toValue: 0, 
+        duration: 200, 
+        useNativeDriver: true,
+      }).start();
+    }
+
+  }, [modalItem]);
+
   return (
-    <Modal visible={modalItem} animationType="fade" statusBarTranslucent={true}>
+    <PaperProvider>
+    <Portal>
+      <Modal visible={modalItem} contentContainerStyle={{flex: 1}} animationType="none">
+      <Animated.View style={{ opacity: fadeAnimation, flex: 1 }}>
       <LinearGradient
         colors={['#4b6cb7', '#182848']}
         className="flex-1 justify-between"
@@ -23,19 +47,24 @@ const Item = ({ item, modalItem, loading }) => {
           </View>
 
           <Text
-            className="text-gray-100 px-20 py-24 "
+            className="text-gray-100 px-20 py-24"
             style={{ fontSize: 220 }}
           >
             ${item.PRECIOLISTA1}
           </Text>
 
-          <Text className="text-7xl text-gray-800 bg-gray-100 px-10 py-10">
+          <Text className="text-6xl text-gray-800 bg-gray-100 px-10 py-10">
             {item.DESCRIPCION}
           </Text>
         </>
       </LinearGradient>
-    </Modal>
+      </Animated.View>
+      </Modal>
+    </Portal>
+  </PaperProvider>
+  
   );
 };
+
 
 export default Item;

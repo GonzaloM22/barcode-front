@@ -1,21 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
-  SafeAreaView,
-  Modal,
+  //Modal,
   FlatList,
   Image,
   View,
   useWindowDimensions,
-  Animated,
   TouchableWithoutFeedback,
 } from 'react-native';
 import BarcodeForm from './BarcodeForm';
+import { Modal, Portal, PaperProvider } from 'react-native-paper';
 
-const Carousel = ({ barcode, setBarcode, modalCarousel }) => {
+const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
   const { width } = useWindowDimensions();
   const flatListRef = useRef(null);
   const currentIndexRef = useRef(0);
+
   const getItemLayout = (_, index) => ({
     length: width,
     offset: width * index,
@@ -54,25 +54,23 @@ const Carousel = ({ barcode, setBarcode, modalCarousel }) => {
       currentIndexRef.current = nextIndex >= data.length ? 0 : nextIndex;
     }
   };
-
+  
   return (
-    <Modal
-      animationType="fade"
-      visible={modalCarousel}
-      statusBarTranslucent={true}
-    >
-      <StatusBar hidden={true} />
+    <PaperProvider >
+    <Portal>
+      <Modal visible={modalCarousel} className="bg-gray-100">
       <View>
         <FlatList
           ref={flatListRef}
           horizontal
           showsHorizontalScrollIndicator
           pagingEnabled
-          //scrollEnabled={false}
+          scrollEnabled={false}
           bounces={false}
           getItemLayout={getItemLayout}
           data={data}
           renderItem={({ item }) => (
+            <TouchableWithoutFeedback onPressIn={() => setModalCarousel(false)}>
             <View style={{ width }}>
               <Image
                 source={item.image}
@@ -83,11 +81,14 @@ const Carousel = ({ barcode, setBarcode, modalCarousel }) => {
                 }}
               />
             </View>
+            </TouchableWithoutFeedback>
           )}
         />
-        <BarcodeForm barcode={barcode} setBarcode={setBarcode} />
+      <BarcodeForm barcode={barcode} setBarcode={setBarcode} />
       </View>
-    </Modal>
+      </Modal>
+    </Portal>
+  </PaperProvider>
   );
 };
 

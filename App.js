@@ -18,7 +18,6 @@ export default function App() {
 
   useEffect(() => {
     let timeoutId;
-
     const resetState1 = () => setModalCarousel(true); // Mostrar modal cuando barcode no se ha modificado en x tiempo
 
     const resetTimeout = () => {
@@ -29,7 +28,7 @@ export default function App() {
     resetTimeout(); // Iniciar el timeout al principio o cuando barcode cambie
 
     return () => clearTimeout(timeoutId); // Limpiar el timeout cuando el componente se desmonte
-  }, [barcode]);
+  }, [barcode, modalCarousel]);
 
   useEffect(() => {
     if (barcode !== '') {
@@ -38,6 +37,7 @@ export default function App() {
   }, [barcode]);
 
   const getArticle = async () => {
+
     try {
       setLoading(true);
       const address = '192.168.100.4'; //10.254.253.38
@@ -66,14 +66,14 @@ export default function App() {
   return (
     <>
       <StatusBar style="auto" hidden={true} />
-      <Carousel
-        barcode={barcode}
-        setBarcode={setBarcode}
-        modalCarousel={modalCarousel}
-      />
 
+      { Object.keys(article).length > 0 &&  
       <Item loading={loading} item={article} modalItem={modalItem} />
+      }
+     
 
+      {!modalCarousel && !Object.keys(article).length > 0  ?
+      <>
       <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1">
         <View>
           <View>
@@ -94,7 +94,18 @@ export default function App() {
           </View>
         </View>
       </LinearGradient>
-      <BarcodeForm barcode={barcode} setBarcode={setBarcode} />
+      <BarcodeForm barcode={barcode} setBarcode={setBarcode}/>
+      </>
+      :
+      modalCarousel &&
+      <Carousel
+        barcode={barcode}
+        setBarcode={setBarcode}
+        setModalCarousel={setModalCarousel}
+        modalCarousel={modalCarousel}
+        modalItem={modalItem}
+      />
+      }
     </>
   );
 }

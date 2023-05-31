@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { StatusBar } from 'expo-status-bar';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import {
-  //Modal,
   FlatList,
   Image,
   View,
+  Text,
+  ActivityIndicator,
   useWindowDimensions,
   TouchableWithoutFeedback,
 } from 'react-native';
@@ -12,9 +13,28 @@ import BarcodeForm from './BarcodeForm';
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
 
 const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true)
   const { width } = useWindowDimensions();
   const flatListRef = useRef(null);
   const currentIndexRef = useRef(0);
+
+  const getImages = async () => {
+    try {
+      setLoading(true);
+      const address = '192.168.100.4'; //10.254.253.38
+      const url = `http://${address}:5008/api/images`; //IPV4 Address
+      const { data } = await axios(url);
+      setImages(data);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getImages();
+  }, []);
 
   const getItemLayout = (_, index) => ({
     length: width,
@@ -22,40 +42,29 @@ const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
     index,
   });
 
-  const data = [
-    {
-      id: 1,
-      image: require('../assets/img/img1.jpg'),
-    },
-    {
-      id: 2,
-      image: require('../assets/img/img2.jpg'),
-    },
-    {
-      id: 3,
-      image: require('../assets/img/img3.jpg'),
-    },
-  ];
   useEffect(() => {
-    const interval = setInterval(scrollToNextImage, 10000);
+    const interval = setInterval(scrollToNextImage, 8000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [images]);
 
   const scrollToNextImage = () => {
     if (flatListRef.current) {
       const nextIndex = currentIndexRef.current + 1;
 
       flatListRef.current.scrollToIndex({
-        index: nextIndex >= data.length ? 0 : nextIndex,
+        index: nextIndex >= images.length ? 0 : nextIndex,
         animated: true,
       });
 
-      currentIndexRef.current = nextIndex >= data.length ? 0 : nextIndex;
+      currentIndexRef.current = nextIndex >= images.length ? 0 : nextIndex;
     }
   };
-  
+
+
   return (
+  <>
+  {!loading ?
     <PaperProvider >
     <Portal>
       <Modal visible={modalCarousel} className="bg-gray-100">
@@ -68,12 +77,12 @@ const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
           scrollEnabled={false}
           bounces={false}
           getItemLayout={getItemLayout}
-          data={data}
+          data={images}
           renderItem={({ item }) => (
             <TouchableWithoutFeedback onPressIn={() => setModalCarousel(false)}>
             <View style={{ width }}>
               <Image
-                source={item.image}
+                source={{uri: item.image}}
                 style={{
                   width,
                   resizeMode: 'contain',
@@ -84,11 +93,18 @@ const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
             </TouchableWithoutFeedback>
           )}
         />
-      <BarcodeForm barcode={barcode} setBarcode={setBarcode} />
+      {<BarcodeForm barcode={barcode} setBarcode={setBarcode} setModalCarousel={setModalCarousel}/>}
       </View>
       </Modal>
     </Portal>
   </PaperProvider>
+
+  : <View className="h-screen flex justify-center bg-gray-100">
+      <ActivityIndicator color="#343434" size={50} />
+      {/*<Text className="text-center text-xl">Cargando imágenes...</Text>*/}
+    </View> 
+  }
+  </>
   );
 };
 

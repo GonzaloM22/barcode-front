@@ -18,11 +18,11 @@ export default function App() {
 
   useEffect(() => {
     let timeoutId;
-    const resetState1 = () => setModalCarousel(true); // Mostrar modal cuando barcode no se ha modificado en x tiempo
+    const resetState = () => setModalCarousel(true); // Mostrar modal cuando barcode no se ha modificado en x tiempo
 
     const resetTimeout = () => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(resetState1, 30000);
+      timeoutId = setTimeout(resetState, 30000);
     };
 
     resetTimeout(); // Iniciar el timeout al principio o cuando barcode cambie
@@ -37,7 +37,6 @@ export default function App() {
   }, [barcode]);
 
   const getArticle = async () => {
-
     try {
       setLoading(true);
       const address = '192.168.100.4'; //10.254.253.38
@@ -67,45 +66,45 @@ export default function App() {
     <>
       <StatusBar style="auto" hidden={true} />
 
-      { Object.keys(article).length > 0 &&  
-      <Item loading={loading} item={article} modalItem={modalItem} />
-      }
-     
+      {Object.keys(article).length > 0 && (
+        <Item loading={loading} item={article} modalItem={modalItem} />
+      )}
 
-      {!modalCarousel && !Object.keys(article).length > 0  ?
-      <>
-      <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1">
-        <View>
-          <View>
-            {!articleNotFound ? (
+      {!modalCarousel && !Object.keys(article).length > 0 ? (
+        <>
+          <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1">
+            <View>
               <View>
-                <Text className="text-9xl text-center text-gray-200 pt-52">
-                  Escanee su producto aqui
-                </Text>
-                <View className="items-center mt-8">
-                  <ChevronDownIcon fill="#FFFFFF" size={250} />
-                </View>
+                {!articleNotFound ? (
+                  <View>
+                    <Text className="text-9xl text-center text-gray-200 pt-52">
+                      Escanee su producto aqui
+                    </Text>
+                    <View className="items-center mt-8">
+                      <ChevronDownIcon fill="#FFFFFF" size={250} />
+                    </View>
+                  </View>
+                ) : (
+                  <Text className="text-9xl text-center text-gray-200 pt-52">
+                    No hay resultados
+                  </Text>
+                )}
               </View>
-            ) : (
-              <Text className="text-9xl text-center text-gray-200 pt-52">
-                No hay resultados
-              </Text>
-            )}
-          </View>
-        </View>
-      </LinearGradient>
-      <BarcodeForm barcode={barcode} setBarcode={setBarcode}/>
-      </>
-      :
-      modalCarousel &&
-      <Carousel
-        barcode={barcode}
-        setBarcode={setBarcode}
-        setModalCarousel={setModalCarousel}
-        modalCarousel={modalCarousel}
-        modalItem={modalItem}
-      />
-      }
+            </View>
+          </LinearGradient>
+          <BarcodeForm barcode={barcode} setBarcode={setBarcode} setModalCarousel={setModalCarousel}/>
+        </>
+      ) : (
+        modalCarousel && (
+          <Carousel
+            barcode={barcode}
+            setBarcode={setBarcode}
+            setModalCarousel={setModalCarousel}
+            modalCarousel={modalCarousel}
+            modalItem={modalItem}
+          />
+        )
+      )}
     </>
   );
 }

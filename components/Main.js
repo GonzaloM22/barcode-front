@@ -1,14 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text, View, ActivityIndicator } from 'react-native';
+import { Text, View } from 'react-native';
 import { ChevronDownIcon } from 'react-native-heroicons/solid';
 import axios from 'axios';
 import Item from "./Item";
 import Carousel from "./Carousel";
 import BarcodeForm from "./BarcodeForm";
-
-
 
 const Main = () => {
   const [article, setArticle] = useState({});
@@ -32,18 +30,47 @@ const Main = () => {
     return () => clearTimeout(timeoutId); // Limpiar el timeout cuando el componente se desmonte
   }, [barcode, modalCarousel]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (barcode !== '') {
       getArticle();
     }
-  }, [barcode]);
+  }, [barcode]);*/
+
+  const handleSubmit = async (data) => { 
+    try {
+      setLoading(true);
+      const address = '192.168.100.4'; //'10.254.253.22'
+      const url = `http://${address}:5008/api/article?barcode=${data}`; //IPV4 Address
+      const response = await axios(url);
+      setArticle(response.data.article[0]);
+      setModalCarousel(false);
+      setModalItem(true);
+    } catch (error) {
+      if (error?.response?.status === 404) setArticleNotFound(true);
+      setModalCarousel(false);
+      setArticle({});
+      setBarcode('');
+    } finally {
+      setLoading(false);
+      setBarcode('');
+
+      setTimeout(() => {
+        setModalItem(false);
+        setArticle({});
+        setArticleNotFound(false);
+      }, 5000);
+    }
+
+
+  }
 
   const getArticle = async () => {
-    try {
+    /*try {
       setLoading(true);
       const address = '192.168.100.4'; //'10.254.253.22'
       const url = `http://${address}:5008/api/article?barcode=${barcode}`; //IPV4 Address
       const response = await axios(url);
+
       setArticle(response.data.article[0]);
       setModalCarousel(false);
       setModalItem(true);
@@ -61,7 +88,7 @@ const Main = () => {
         setArticle({});
         setArticleNotFound(false);
       }, 5000);
-    }
+    }*/
   };
 
   return (
@@ -98,6 +125,7 @@ const Main = () => {
             barcode={barcode}
             setBarcode={setBarcode}
             setModalCarousel={setModalCarousel}
+            handleSubmit={handleSubmit}
           />
         </>
       ) : (
@@ -108,6 +136,7 @@ const Main = () => {
             setModalCarousel={setModalCarousel}
             modalCarousel={modalCarousel}
             modalItem={modalItem}
+            handleSubmit={handleSubmit}
           />
         )
       )}

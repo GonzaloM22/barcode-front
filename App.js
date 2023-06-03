@@ -23,8 +23,8 @@ const App = () => {
             name="Main"
             component={Main}
             options={{
-              title: 'Main'/*,
-              headerShown: false,*/
+              title: 'Main',
+              headerShown: false,
             }}
           />
         </Stack.Navigator>

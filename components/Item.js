@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { View, Image, StyleSheet, Animated } from 'react-native';
+import { View, Image, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Modal, Portal, Text, PaperProvider } from 'react-native-paper';
 
 const Item = ({ item, modalItem, loading }) => {
   const image = require('../assets/logo.png');
-
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

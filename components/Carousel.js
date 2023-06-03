@@ -12,7 +12,13 @@ import {
 import BarcodeForm from './BarcodeForm';
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
 
-const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
+const Carousel = ({
+  barcode,
+  setBarcode,
+  setModalCarousel,
+  modalCarousel,
+  handleSubmit,
+}) => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
@@ -66,7 +72,7 @@ const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
       {!loading ? (
         <PaperProvider>
           <Portal>
-            <Modal visible={modalCarousel} className="bg-gray-100">
+            <Modal visible={true} className="bg-gray-100 flex-1">
               <View>
                 <FlatList
                   ref={flatListRef}
@@ -81,7 +87,7 @@ const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
                     <TouchableWithoutFeedback
                       onPressIn={() => setModalCarousel(false)}
                     >
-                      <View style={{ width }}>
+                      <View style={{ width, flex: 1 }}>
                         <Image
                           source={{ uri: item.image }}
                           style={{
@@ -94,22 +100,22 @@ const Carousel = ({ barcode, setBarcode, setModalCarousel, modalCarousel }) => {
                     </TouchableWithoutFeedback>
                   )}
                 />
-                {
-                  <BarcodeForm
-                    barcode={barcode}
-                    setBarcode={setBarcode}
-                    setModalCarousel={setModalCarousel}
-                  />
-                }
               </View>
             </Modal>
           </Portal>
+          <BarcodeForm
+            barcode={barcode}
+            setBarcode={setBarcode}
+            setModalCarousel={setModalCarousel}
+            handleSubmit={handleSubmit}
+          />
         </PaperProvider>
       ) : (
-        <View className="h-screen flex justify-center bg-gray-100">
-          <ActivityIndicator color="#343434" size={50} />
-          {/*<Text className="text-center text-xl">Cargando imágenes...</Text>*/}
-        </View>
+        <TouchableWithoutFeedback onPressIn={() => setModalCarousel(false)}>
+          <View className="h-screen flex justify-center bg-gray-100">
+            <ActivityIndicator color="#343434" size={50} />
+          </View>
+        </TouchableWithoutFeedback>
       )}
     </>
   );

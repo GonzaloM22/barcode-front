@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Image } from 'react-native';
+import { View, Image, ActivityIndicator } from 'react-native';
 import {
   TextInput,
   Headline,
@@ -18,33 +18,67 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
   const [dataLogin, setDataLogin] = useState({
-    ipAdress: '',
+    ipAddress: '',
     userName: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [loadingLS, setLoadingls] = useState(false);
   const [fieldEmpty, setFieldEmpty] = useState(false);
   const [networkError, setNetworkError] = useState(false);
   const [userError, setUserError] = useState(false);
   //const image = require('../assets/logo.png');
   const navigation = useNavigation();
-  const { ipAdress, userName, password } = dataLogin;
+  const { ipAddress, userName, password } = dataLogin;
+
+
+
+  useEffect(() => {
+    const getDataLS = async () => {
+      try {
+        setLoadingls(true);
+        const ipAddressLS = await AsyncStorage.getItem('ipAddress');
+        const tkn = await AsyncStorage.getItem('token');
+        ///setIpAddress(ipAddressLS)
+        if (tkn && ipAddressLS) {
+          navigation.navigate('Main');
+        }
+        setTimeout(() => {
+          setLoadingls(false);
+        }, 1000);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getDataLS();
+  }, []);
+
+
+
+
+
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      if (ipAdress === '' || userName === '' || password === '')
+      if (ipAddress === '' || userName === '' || password === '')
         return setFieldEmpty(true);
 
-      const url = `http://${ipAdress}/api/auth`; //IPV4 Address
+      const url = `http://${ipAddress}/api/auth`; //IPV4 Address
       const { data } = await axios.post(url, {
         userName,
         password,
       });
-      if (data?.user) navigation.navigate('Main');
+
+      if (data?.token) navigation.navigate('Main');
+      await AsyncStorage.setItem('ipAddress', ipAddress);
+      await AsyncStorage.setItem('token', data?.token);
+
     } catch (error) {
+      console.log(error)
       if (error?.response?.status === 404) return setUserError(true);
       setNetworkError(true);
     } finally {
@@ -55,23 +89,32 @@ const Login = () => {
   return (
     <PaperProvider>
       <StatusBar style="auto" hidden={true} />
-
-      <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1 pt-12">
-        <Snackbar
-          visible={networkError}
-          onDismiss={() => setNetworkError(false)}
-          duration={3000}
-          style={{ bottom: 5 }}
+      {loadingLS ? (
+        <View className="h-screen flex justify-center bg-gray-100">
+          <ActivityIndicator color="#343434" size={50} />
+        </View>
+      ) : (
+        <LinearGradient
+          colors={['#4b6cb7', '#182848']}
+          className="flex-1 pt-12"
         >
-          Error de conexión con el servidor
-        </Snackbar>
-        <KeyboardAwareScrollView style={{ flex: 1 }}>
-          <View
-            className="bg-gray-100 px-8 pb-14 pt-6 rounded-xl shadow-xl mx-auto"
-            style={{ width: 500 }}
+          <Snackbar
+            visible={networkError}
+            onDismiss={() => setNetworkError(false)}
+            duration={3000}
+            style={{ bottom: 5 }}
           >
-            <Headline className="text-4xl text-center mb-8">Iniciar Sesión</Headline>
-            {/*<Image
+            Error de conexión con el servidor
+          </Snackbar>
+          <KeyboardAwareScrollView style={{ flex: 1 }}>
+            <View
+              className="bg-gray-100 px-8 pb-14 pt-6 rounded-xl shadow-xl mx-auto"
+              style={{ width: 500 }}
+            >
+              <Headline className="text-4xl text-center mb-8 w-32 mx-auto">
+                Iniciar Sesión
+              </Headline>
+              {/*<Image
               source={image}
               className="mx-auto"
               style={{
@@ -80,78 +123,79 @@ const Login = () => {
                 height: 150,
               }}
             />*/}
-            <TextInput
-              mode="outlined"
-              label="Dirección IP"
-              placeholder="Número de ip: puerto"
-              keyboardType="url"
-              onChangeText={(val) =>
-                setDataLogin({ ...dataLogin, ipAdress: val })
-              }
-              value={ipAdress}
-            />
-            <HelperText type="error" visible={fieldEmpty && ipAdress === ''}>
-              Dirección IP es obligatorio
-            </HelperText>
-            <TextInput
-              mode="outlined"
-              label="Usuario"
-              placeholder="Nombre de Usuario ERP"
-              onChangeText={(val) =>
-                setDataLogin({ ...dataLogin, userName: val })
-              }
-              value={userName}
-            />
-            <HelperText type="error" visible={fieldEmpty && userName === ''}>
-              Usuario es obligatorio
-            </HelperText>
-            <TextInput
-              mode="outlined"
-              label="Contraseña"
-              placeholder="Contraseña ERP"
-              secureTextEntry
-              onChangeText={(val) =>
-                setDataLogin({ ...dataLogin, password: val })
-              }
-              value={password}
-            />
-            <HelperText type="error" visible={fieldEmpty && password === ''}>
-              Contraseña es obligatorio
-            </HelperText>
+              <TextInput
+                mode="outlined"
+                label="Dirección IP"
+                placeholder="Número de ip: puerto"
+                keyboardType="url"
+                onChangeText={(val) =>
+                  setDataLogin({ ...dataLogin, ipAddress: val })
+                }
+                value={ipAddress}
+              />
+              <HelperText type="error" visible={fieldEmpty && ipAddress === ''}>
+                Dirección IP es obligatorio
+              </HelperText>
+              <TextInput
+                mode="outlined"
+                label="Usuario"
+                placeholder="Nombre de Usuario ERP"
+                onChangeText={(val) =>
+                  setDataLogin({ ...dataLogin, userName: val })
+                }
+                value={userName}
+              />
+              <HelperText type="error" visible={fieldEmpty && userName === ''}>
+                Usuario es obligatorio
+              </HelperText>
+              <TextInput
+                mode="outlined"
+                label="Contraseña"
+                placeholder="Contraseña ERP"
+                secureTextEntry
+                onChangeText={(val) =>
+                  setDataLogin({ ...dataLogin, password: val })
+                }
+                value={password}
+              />
+              <HelperText type="error" visible={fieldEmpty && password === ''}>
+                Contraseña es obligatorio
+              </HelperText>
 
-            <Button
-              className="rounded-xl"
-              buttonColor="#4b6cb7"
-              mode="contained"
-              disabled={loading}
-              loading={loading}
-              onPress={handleSubmit}
-            >
-              Ingresar
-            </Button>
-
-            <Portal>
-              <Dialog
-                visible={userError}
-                onDismiss={() => setUserError(false)}
-                style={{ width: 350, alignSelf: 'center' }}
-                className="rounded-2xl px-2 bg-gray-100"
+              <Button
+                className="rounded-xl"
+                buttonColor="#4b6cb7"
+                mode="contained"
+                disabled={loading}
+                loading={loading}
+                onPress={handleSubmit}
               >
-                <Dialog.Title>Error</Dialog.Title>
+                Ingresar
+              </Button>
 
-                <Dialog.Content>
-                  <Text variant="bodyMedium">
-                    Usuario o contraseña incorrectos
-                  </Text>
-                </Dialog.Content>
-                <Dialog.Actions>
-                  <Button onPress={() => setUserError(false)}>Aceptar</Button>
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
-          </View>
-        </KeyboardAwareScrollView>
-      </LinearGradient>
+              <Portal>
+                <Dialog
+                  visible={userError}
+                  onDismiss={() => setUserError(false)}
+                  style={{ width: 350, alignSelf: 'center' }}
+                  className="rounded-2xl px-2 bg-gray-100"
+                >
+                  <Dialog.Title>Error</Dialog.Title>
+
+                  <Dialog.Content>
+                    <Text variant="bodyMedium">
+                      Usuario o contraseña incorrectos
+                    </Text>
+                  </Dialog.Content>
+                  <Dialog.Actions>
+                    <Button onPress={() => setUserError(false)}>Aceptar</Button>
+                  </Dialog.Actions>
+                </Dialog>
+              </Portal>
+            </View>
+          </KeyboardAwareScrollView>
+        </LinearGradient>
+      )}
     </PaperProvider>
   );
 };

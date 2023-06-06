@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 import {
   FlatList,
   Image,
@@ -13,6 +14,7 @@ import BarcodeForm from './BarcodeForm';
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
 
 const Carousel = ({
+  ipAddress,
   barcode,
   setBarcode,
   setModalCarousel,
@@ -24,18 +26,18 @@ const Carousel = ({
   const { width } = useWindowDimensions();
   const flatListRef = useRef(null);
   const currentIndexRef = useRef(0);
+  
 
   useEffect(() => {
     const getImages = async () => {
       try {
         setLoading(true);
-        const address = '192.168.100.4'; //10.254.253.22
-        const url = `http://${address}:5008/api/images`; //IPV4 Address
+        const url = `http://${ipAddress}/api/images`; //IPV4 Address
         const { data } = await axios(url);
         setImages(data);
         setLoading(false);
       } catch (error) {
-        console.log(error);
+       // console.log(error?.data);
       }
     };
 

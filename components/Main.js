@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
 import { ChevronDownIcon } from 'react-native-heroicons/solid';
@@ -15,6 +16,21 @@ const Main = () => {
   const [articleNotFound, setArticleNotFound] = useState(false);
   const [modalCarousel, setModalCarousel] = useState(false);
   const [modalItem, setModalItem] = useState(false);
+  const [ipAddress, setIpAddress] = useState()
+  
+
+
+  useEffect(() => {
+    const getDataLS = async () => {
+      try {
+        const ipAddressLS = await AsyncStorage.getItem('ipAddress');
+        setIpAddress(ipAddressLS)
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getDataLS();
+  }, []);
 
   useEffect(() => {
     let timeoutId;
@@ -40,12 +56,13 @@ const Main = () => {
     try {
       setLoading(true);
       const address = '192.168.100.4'; //'10.254.253.22'
-      const url = `http://${address}:5008/api/article?barcode=${data}`; //IPV4 Address
+      const url = `http://${ipAddress}/api/article?barcode=${data}`; //IPV4 Address
       const response = await axios(url);
       setArticle(response.data.article[0]);
       setModalCarousel(false);
       setModalItem(true);
     } catch (error) {
+      console.log(error)
       if (error?.response?.status === 404) setArticleNotFound(true);
       setModalCarousel(false);
       setArticle({});
@@ -137,6 +154,7 @@ const Main = () => {
             modalCarousel={modalCarousel}
             modalItem={modalItem}
             handleSubmit={handleSubmit}
+            ipAddress={ipAddress}
           />
         )
       )}

@@ -1,13 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
 import { ChevronDownIcon } from 'react-native-heroicons/solid';
 import axios from 'axios';
-import Item from "./Item";
-import Carousel from "./Carousel";
-import BarcodeForm from "./BarcodeForm";
+import Item from './Item';
+import Carousel from './Carousel';
+import BarcodeForm from './BarcodeForm';
 
 const Main = () => {
   const [article, setArticle] = useState({});
@@ -16,96 +17,65 @@ const Main = () => {
   const [articleNotFound, setArticleNotFound] = useState(false);
   const [modalCarousel, setModalCarousel] = useState(false);
   const [modalItem, setModalItem] = useState(false);
-  const [ipAddress, setIpAddress] = useState()
-  
+  const [showCarousel, setShowCarousel] = useState(true);
+  const navigation = useNavigation();
 
 
   useEffect(() => {
-    const getDataLS = async () => {
-      try {
-        const ipAddressLS = await AsyncStorage.getItem('ipAddress');
-        setIpAddress(ipAddressLS)
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getDataLS();
-  }, []);
+    if (showCarousel) {
+      let timeoutId;
+      const resetState = () => setModalCarousel(true); // Mostrar modal cuando barcode no se ha modificado en x tiempo
 
-  useEffect(() => {
-    let timeoutId;
-    const resetState = () => setModalCarousel(true); // Mostrar modal cuando barcode no se ha modificado en x tiempo
+      const resetTimeout = () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(resetState, 30000);
+      };
 
-    const resetTimeout = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(resetState, 30000);
-    };
+      resetTimeout(); // Iniciar el timeout al principio o cuando barcode cambie
 
-    resetTimeout(); // Iniciar el timeout al principio o cuando barcode cambie
-
-    return () => clearTimeout(timeoutId); // Limpiar el timeout cuando el componente se desmonte
+      return () => clearTimeout(timeoutId); // Limpiar el timeout cuando el componente se desmonte
+    }
   }, [barcode, modalCarousel]);
 
-  /*useEffect(() => {
-    if (barcode !== '') {
-      getArticle();
-    }
-  }, [barcode]);*/
-
-  const handleSubmit = async (data) => { 
+  const handleSubmit = async (data) => {
     try {
       setLoading(true);
-      const address = '192.168.100.4'; //'10.254.253.22'
-      const url = `http://${ipAddress}/api/article?barcode=${data}`; //IPV4 Address
-      const response = await axios(url);
-      setArticle(response.data.article[0]);
+
+      const ipAddressLS = await AsyncStorage.getItem('ipAddress');
+      const tknLS = await AsyncStorage.getItem('token');
+     
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${tknLS}`,
+        },
+        timeout: 8000,
+      };
+      const url = `http://${ipAddressLS}/api/article?barcode=${data}`;
+      const response = await axios(url, config);
+      setArticle(response.data);
+      console.log(response.data)
       setModalCarousel(false);
       setModalItem(true);
     } catch (error) {
-      console.log(error)
-      if (error?.response?.status === 404) setArticleNotFound(true);
-      setModalCarousel(false);
-      setArticle({});
-      setBarcode('');
+      if (!error?.response) {
+        setModalCarousel(false);
+        return navigation.navigate('Login');
+      } else {
+        if (error?.response?.status === 404) setArticleNotFound(true);
+        setModalCarousel(false);
+        setArticle({});
+        setBarcode('');
+      }
     } finally {
       setLoading(false);
       setBarcode('');
-
       setTimeout(() => {
         setModalItem(false);
         setArticle({});
         setArticleNotFound(false);
       }, 5000);
     }
-
-
-  }
-
-  const getArticle = async () => {
-    /*try {
-      setLoading(true);
-      const address = '192.168.100.4'; //'10.254.253.22'
-      const url = `http://${address}:5008/api/article?barcode=${barcode}`; //IPV4 Address
-      const response = await axios(url);
-
-      setArticle(response.data.article[0]);
-      setModalCarousel(false);
-      setModalItem(true);
-    } catch (error) {
-      if (error.response.status === 404) setArticleNotFound(true);
-      setModalCarousel(false);
-      setArticle({});
-      setBarcode('');
-    } finally {
-      setLoading(false);
-      setBarcode('');
-
-      setTimeout(() => {
-        setModalItem(false);
-        setArticle({});
-        setArticleNotFound(false);
-      }, 5000);
-    }*/
   };
 
   return (
@@ -154,7 +124,7 @@ const Main = () => {
             modalCarousel={modalCarousel}
             modalItem={modalItem}
             handleSubmit={handleSubmit}
-            ipAddress={ipAddress}
+            setShowCarousel={setShowCarousel}
           />
         )
       )}

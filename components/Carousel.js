@@ -12,32 +12,48 @@ import {
 } from 'react-native';
 import BarcodeForm from './BarcodeForm';
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Carousel = ({
-  ipAddress,
   barcode,
   setBarcode,
   setModalCarousel,
-  modalCarousel,
   handleSubmit,
+  setShowCarousel,
 }) => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const { width } = useWindowDimensions();
   const flatListRef = useRef(null);
   const currentIndexRef = useRef(0);
-  
+  const navigation = useNavigation();
 
   useEffect(() => {
     const getImages = async () => {
       try {
         setLoading(true);
-        const url = `http://${ipAddress}/api/images`; //IPV4 Address
-        const { data } = await axios(url);
+        const ipAddressLS = await AsyncStorage.getItem('ipAddress');
+        const tknLS = await AsyncStorage.getItem('token');
+
+        const config = {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${tknLS}`,
+          },
+          timeout: 15000,
+        };
+
+        const url = `http://${ipAddressLS}/api/images`; //IPV4 Address
+        const { data } = await axios(url, config);
         setImages(data);
         setLoading(false);
       } catch (error) {
-       // console.log(error?.data);
+        if (error?.response?.status === 404) {
+          navigation.navigate('Main');
+          setModalCarousel(false);
+          return setShowCarousel(false);
+        }
+        navigation.navigate('Login');
       }
     };
 

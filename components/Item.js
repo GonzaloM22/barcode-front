@@ -7,6 +7,9 @@ const Item = ({ item, modalItem, loading }) => {
   const image = require('../assets/logo.png');
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
+  const { DESCRIPCION, NUMEROLISTA } = item;
+  const price = `PRECIOLISTA${NUMEROLISTA}`;
+
   useEffect(() => {
     if (modalItem) {
       Animated.timing(fadeAnimation, {
@@ -52,11 +55,11 @@ const Item = ({ item, modalItem, loading }) => {
                   className="text-gray-100 px-20 py-24"
                   style={{ fontSize: 220 }}
                 >
-                  ${item.PRECIOLISTA1}
+                  ${item[price]}
                 </Text>
 
                 <Text className="text-6xl text-gray-800 bg-gray-100 px-10 py-10">
-                  {item.DESCRIPCION}
+                  {DESCRIPCION}
                 </Text>
               </>
             </LinearGradient>

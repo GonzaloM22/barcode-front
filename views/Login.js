@@ -23,62 +23,77 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Login = () => {
   const [dataLogin, setDataLogin] = useState({
     ipAddress: '',
-    userName: '',
+    username: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const [loadingLS, setLoadingls] = useState(false);
+  const [loadingLS, setLoadingLs] = useState(false);
   const [fieldEmpty, setFieldEmpty] = useState(false);
   const [networkError, setNetworkError] = useState(false);
+  const [sesionExpired, setSesionExpired] = useState(false);
   const [userError, setUserError] = useState(false);
   //const image = require('../assets/logo.png');
   const navigation = useNavigation();
-  const { ipAddress, userName, password } = dataLogin;
-
-
+  const { ipAddress, username, password } = dataLogin;
 
   useEffect(() => {
     const getDataLS = async () => {
       try {
-        setLoadingls(true);
+        setLoadingLs(true);
+
         const ipAddressLS = await AsyncStorage.getItem('ipAddress');
-        const tkn = await AsyncStorage.getItem('token');
-        ///setIpAddress(ipAddressLS)
-        if (tkn && ipAddressLS) {
-          navigation.navigate('Main');
+        const tknLS = await AsyncStorage.getItem('token');
+
+        if (tknLS && ipAddressLS) {
+          const url = `http://${ipAddressLS}/api/profile`;
+
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${tknLS}`,
+            },
+            timeout: 15000,
+          };
+          const response = await axios(url, config);
+          if (response.data.status === 200) {
+            navigation.navigate('Main');
+          }
         }
         setTimeout(() => {
-          setLoadingls(false);
+          setLoadingLs(false);
         }, 1000);
       } catch (error) {
-        console.log(error);
+        if (error?.response?.status == 401) {
+          setSesionExpired(true);
+        } else {
+          setNetworkError(true);
+        }
+        navigation.navigate('Login');
+        setLoadingLs(false);
+        
       }
     };
     getDataLS();
   }, []);
 
-
-
-
-
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      if (ipAddress === '' || userName === '' || password === '')
+      if (ipAddress === '' || username === '' || password === '')
         return setFieldEmpty(true);
 
       const url = `http://${ipAddress}/api/auth`; //IPV4 Address
       const { data } = await axios.post(url, {
-        userName,
+        username,
         password,
+      }, {
+        timeout: 10000
       });
 
       if (data?.token) navigation.navigate('Main');
       await AsyncStorage.setItem('ipAddress', ipAddress);
       await AsyncStorage.setItem('token', data?.token);
-
     } catch (error) {
-      console.log(error)
       if (error?.response?.status === 404) return setUserError(true);
       setNetworkError(true);
     } finally {
@@ -99,12 +114,17 @@ const Login = () => {
           className="flex-1 pt-12"
         >
           <Snackbar
-            visible={networkError}
-            onDismiss={() => setNetworkError(false)}
+            visible={networkError || sesionExpired}
+            onDismiss={() => {
+              setNetworkError(false);
+              setSesionExpired(false);
+            }}
             duration={3000}
             style={{ bottom: 5 }}
           >
-            Error de conexión con el servidor
+            {networkError
+              ? 'Error de conexión con el servidor'
+              : 'Sesión vencida, inicie sesión nuevamente'}
           </Snackbar>
           <KeyboardAwareScrollView style={{ flex: 1 }}>
             <View
@@ -141,11 +161,11 @@ const Login = () => {
                 label="Usuario"
                 placeholder="Nombre de Usuario ERP"
                 onChangeText={(val) =>
-                  setDataLogin({ ...dataLogin, userName: val })
+                  setDataLogin({ ...dataLogin, username: val })
                 }
-                value={userName}
+                value={username}
               />
-              <HelperText type="error" visible={fieldEmpty && userName === ''}>
+              <HelperText type="error" visible={fieldEmpty && username === ''}>
                 Usuario es obligatorio
               </HelperText>
               <TextInput

@@ -4,7 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Modal, Portal, Text, PaperProvider } from 'react-native-paper';
 
 const Item = ({ item, modalItem, loading }) => {
-  const image = require('../assets/logo.png');
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
   const { DESCRIPCION, NUMEROLISTA } = item;
@@ -42,7 +41,7 @@ const Item = ({ item, modalItem, loading }) => {
               <>
                 <View className="bg-gray-100 px-10">
                   <Image
-                    source={image}
+                    //source={image}
                     style={{
                       resizeMode: 'contain',
                       width: 220,

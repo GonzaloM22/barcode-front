@@ -36,13 +36,21 @@ const Login = () => {
   const navigation = useNavigation();
   const { ipAddress, username, password } = dataLogin;
 
+ 
   useEffect(() => {
+    const settIpAddress = async () => {
+      const ipAddressLS = await AsyncStorage.getItem('ipAddress');
+      if (ipAddressLS) setDataLogin({ ...dataLogin, ipAddress: ipAddressLS });
+    };
+
     const getDataLS = async () => {
       try {
         setLoadingLs(true);
 
         const ipAddressLS = await AsyncStorage.getItem('ipAddress');
         const tknLS = await AsyncStorage.getItem('token');
+        //setTokenLS(tknLS);
+        //setIpAddressLS(ipAddressLS);
 
         if (tknLS && ipAddressLS) {
           const url = `http://${ipAddressLS}/api/profile`;
@@ -55,13 +63,10 @@ const Login = () => {
             timeout: 15000,
           };
           const response = await axios(url, config);
-          if (response.data.status === 200) {
-            navigation.navigate('Main');
-          }
+          if (response.data.status === 200)
+            navigation.navigate('Main', { token: tknLS, ipAddress: ipAddressLS });
         }
-        setTimeout(() => {
-          setLoadingLs(false);
-        }, 1000);
+        setTimeout(() => setLoadingLs(false), 10000);
       } catch (error) {
         if (error?.response?.status == 401) {
           setSesionExpired(true);
@@ -70,9 +75,9 @@ const Login = () => {
         }
         navigation.navigate('Login');
         setLoadingLs(false);
-        
       }
     };
+    settIpAddress();
     getDataLS();
   }, []);
 
@@ -83,14 +88,19 @@ const Login = () => {
         return setFieldEmpty(true);
 
       const url = `http://${ipAddress}/api/auth`; //IPV4 Address
-      const { data } = await axios.post(url, {
-        username,
-        password,
-      }, {
-        timeout: 10000
-      });
+      const { data } = await axios.post(
+        url,
+        {
+          username,
+          password,
+        },
+        {
+          timeout: 10000,
+        }
+      );
 
-      if (data?.token) navigation.navigate('Main');
+      if (data?.token)
+        navigation.navigate('Main', { token: data.token, ipAddress });
       await AsyncStorage.setItem('ipAddress', ipAddress);
       await AsyncStorage.setItem('token', data?.token);
     } catch (error) {

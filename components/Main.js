@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import * as Font from 'expo-font';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text, View, ActivityIndicator } from 'react-native';
+import { Text, View } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 import { ChevronDownIcon } from 'react-native-heroicons/solid';
 import axios from 'axios';
 import Item from './Item';
@@ -20,30 +20,11 @@ const Main = () => {
   const [modalCarousel, setModalCarousel] = useState(false);
   const [modalItem, setModalItem] = useState(false);
   const [showCarousel, setShowCarousel] = useState(false);
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState({});
+  const [logo, setLogo] = useState(null);
   const [loadingImages, setLoadingImages] = useState(true);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+
   const navigation = useNavigation();
-  
-  /*useEffect(() => {
-    const loadFonts = () => {
-      Font.loadAsync({
-        'outfit-regular': require('../assets/Outfit-Regular.ttf'),
-      });
-      setFontsLoaded(true);
-    };
-
-    if (!fontsLoaded) loadFonts();
-  }, []);
-
-  if (!fontsLoaded) {
-    return (
-      <View className="h-screen flex justify-center bg-gray-100">
-        <ActivityIndicator color="#343434" size={50} />
-      </View>
-    );
-  }*/
-
 
   useEffect(() => {
     const getImages = async () => {
@@ -59,8 +40,10 @@ const Main = () => {
 
         const url = `http://${ipAddress}/api/images`; //IPV4 Address
         const { data } = await axios(url, config);
-        setImages(data);
+        setLogo(data?.logo);
+        setImages(data?.carousel);
         setLoadingImages(false);
+        if (data?.carousel.length === 0) return setShowCarousel(false);
         setShowCarousel(true);
       } catch (error) {
         if (error?.response?.status === 404) return setShowCarousel(false);
@@ -70,7 +53,6 @@ const Main = () => {
     };
     if (token && ipAddress) getImages();
   }, [token, ipAddress]);
-
 
   useEffect(() => {
     if (showCarousel) {
@@ -90,7 +72,8 @@ const Main = () => {
 
   const handleSubmit = async (data) => {
     try {
-      setLoading(true);     
+      setLoading(true);
+      setModalCarousel(false);
       const config = {
         headers: {
           'Content-Type': 'application/json',
@@ -101,11 +84,9 @@ const Main = () => {
       const url = `http://${ipAddress}/api/article?barcode=${data}`;
       const response = await axios(url, config);
       setArticle(response.data);
-      setModalCarousel(false);
       setModalItem(true);
-
     } catch (error) {
-      if (!error?.response) {
+      if (!error?.response || error?.response?.status === 401) {
         setModalCarousel(false);
         return navigation.navigate('Login');
       } else {
@@ -130,26 +111,44 @@ const Main = () => {
       <StatusBar style="auto" hidden={true} />
 
       {Object.keys(article).length > 0 && (
-        <Item loading={loading} item={article} modalItem={modalItem} />
+        <Item
+          loading={loading}
+          item={article}
+          modalItem={modalItem}
+          logo={logo}
+        />
       )}
 
       {!modalCarousel && !Object.keys(article).length > 0 ? (
         <>
           <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1">
-            <View>
+            <View className="flex justify-center items-center h-screen">
               <View>
-                {!articleNotFound ? (
+                {loading ? (
+                  <ActivityIndicator
+                    animating={loading}
+                    color="rgb(229 231 235)"
+                    size={70}
+                  />
+                ) : !articleNotFound ? (
                   <View>
-                    <Text className="text-9xl text-center text-gray-200 pt-52" 
-                    /*</View>style={{fontFamily: 'outfit-regular'}}*/>
-                      Escanee su producto aqui
-                    </Text>
-                    <View className="items-center mt-8">
-                      <ChevronDownIcon fill="#FFFFFF" size={250} />
-                    </View>
+                    <>
+                      <Text
+                        className="text-9xl text-center text-gray-200 pt-52"
+                        style={{ fontFamily: 'nunito-regular' }}
+                      >
+                        Escanee su producto aqui
+                      </Text>
+                      <View className="items-center mt-8">
+                        <ChevronDownIcon fill="#FFFFFF" size={250} />
+                      </View>
+                    </>
                   </View>
                 ) : (
-                  <Text className="text-9xl text-center text-gray-200 pt-52">
+                  <Text
+                    className="text-9xl text-center text-gray-200"
+                    style={{ fontFamily: 'nunito-regular' }}
+                  >
                     No hay resultados
                   </Text>
                 )}

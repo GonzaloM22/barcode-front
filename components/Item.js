@@ -2,8 +2,9 @@ import { useEffect, useRef } from 'react';
 import { View, Image, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Modal, Portal, Text, PaperProvider } from 'react-native-paper';
+import FormatNumber from '../helpers/formatPrice';
 
-const Item = ({ item, modalItem, loading }) => {
+const Item = ({ item, modalItem, logo }) => {
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
   const { DESCRIPCION, NUMEROLISTA } = item;
@@ -39,25 +40,30 @@ const Item = ({ item, modalItem, loading }) => {
               className="flex-1 justify-between"
             >
               <>
-                <View className="bg-gray-100 px-10">
-                  <Image
-                    //source={image}
-                    style={{
-                      resizeMode: 'contain',
-                      width: 220,
-                      height: 150,
-                    }}
-                  />
+                <View className="bg-gray-200 px-10">
+                  {logo && (
+                    <Image
+                      source={{ uri: logo }}
+                      style={{
+                        resizeMode: 'contain',
+                        width: 220,
+                        height: 150,
+                      }}
+                    />
+                  )}
                 </View>
 
                 <Text
-                  className="text-gray-100 px-20 py-24"
-                  style={{ fontSize: 220 }}
+                  className="text-gray-200 px-20 py-24"
+                  style={{ fontSize: 220, fontFamily: 'nunito-regular' }}
                 >
-                  ${item[price]}
+                  ${FormatNumber(item[price])}
                 </Text>
 
-                <Text className="text-6xl text-gray-800 bg-gray-100 px-10 py-10">
+                <Text
+                  className="text-5xl text-zinc-700 bg-gray-100 pl-10 pr-2 py-10"
+                  style={{ fontFamily: 'nunito-regular' }}
+                >
                   {DESCRIPCION}
                 </Text>
               </>

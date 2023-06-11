@@ -3,12 +3,11 @@ import {
   FlatList,
   Image,
   View,
-  ActivityIndicator,
   useWindowDimensions,
   TouchableWithoutFeedback,
 } from 'react-native';
 import BarcodeForm from './BarcodeForm';
-import { Modal, Portal, PaperProvider } from 'react-native-paper';
+import { Modal, Portal, PaperProvider, ActivityIndicator } from 'react-native-paper';
 
 const Carousel = ({
   barcode,
@@ -96,7 +95,7 @@ const Carousel = ({
       ) : (
         <TouchableWithoutFeedback onPressIn={() => setModalCarousel(false)}>
           <View className="h-screen flex justify-center bg-gray-100">
-            <ActivityIndicator color="#343434" size={50} />
+            <ActivityIndicator color="#343434" size={50} animating={loadingImages} />
           </View>
         </TouchableWithoutFeedback>
       )}

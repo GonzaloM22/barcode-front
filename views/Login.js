@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Image, ActivityIndicator } from 'react-native';
+import { View, Image } from 'react-native';
 import {
   TextInput,
   Headline,
@@ -13,6 +13,7 @@ import {
   Snackbar,
   Text,
   Provider as PaperProvider,
+  ActivityIndicator,
 } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -36,8 +37,8 @@ const Login = () => {
   const navigation = useNavigation();
   const { ipAddress, username, password } = dataLogin;
 
- 
   useEffect(() => {
+
     const settIpAddress = async () => {
       const ipAddressLS = await AsyncStorage.getItem('ipAddress');
       if (ipAddressLS) setDataLogin({ ...dataLogin, ipAddress: ipAddressLS });
@@ -49,8 +50,6 @@ const Login = () => {
 
         const ipAddressLS = await AsyncStorage.getItem('ipAddress');
         const tknLS = await AsyncStorage.getItem('token');
-        //setTokenLS(tknLS);
-        //setIpAddressLS(ipAddressLS);
 
         if (tknLS && ipAddressLS) {
           const url = `http://${ipAddressLS}/api/profile`;
@@ -64,7 +63,10 @@ const Login = () => {
           };
           const response = await axios(url, config);
           if (response.data.status === 200)
-            navigation.navigate('Main', { token: tknLS, ipAddress: ipAddressLS });
+            navigation.navigate('Main', {
+              token: tknLS,
+              ipAddress: ipAddressLS,
+            });
         }
         setTimeout(() => setLoadingLs(false), 10000);
       } catch (error) {
@@ -108,7 +110,10 @@ const Login = () => {
       setNetworkError(true);
     } finally {
       setLoading(false);
+ 
     }
+
+ 
   };
 
   return (
@@ -116,7 +121,7 @@ const Login = () => {
       <StatusBar style="auto" hidden={true} />
       {loadingLS ? (
         <View className="h-screen flex justify-center bg-gray-100">
-          <ActivityIndicator color="#343434" size={50} />
+          <ActivityIndicator color="#343434" size={70} animating={loadingLS} />
         </View>
       ) : (
         <LinearGradient

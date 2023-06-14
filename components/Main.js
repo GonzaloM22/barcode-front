@@ -21,6 +21,7 @@ const Main = () => {
   const [modalItem, setModalItem] = useState(false);
   const [showCarousel, setShowCarousel] = useState(false);
   const [images, setImages] = useState({});
+  const [sliderTime, setSliderTime] = useState(30000);
   const [logo, setLogo] = useState(null);
   const [loadingImages, setLoadingImages] = useState(true);
 
@@ -42,6 +43,7 @@ const Main = () => {
         const { data } = await axios(url, config);
         setLogo(data?.logo);
         setImages(data?.carousel);
+        setSliderTime(data?.slidertime);
         setLoadingImages(false);
         if (data?.carousel.length === 0) return setShowCarousel(false);
         setShowCarousel(true);
@@ -61,7 +63,7 @@ const Main = () => {
 
       const resetTimeout = () => {
         clearTimeout(timeoutId);
-        timeoutId = setTimeout(resetState, 30000);
+        timeoutId = setTimeout(resetState, sliderTime);
       };
 
       resetTimeout(); // Iniciar el timeout al principio o cuando barcode cambie

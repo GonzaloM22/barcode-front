@@ -7,8 +7,7 @@ import FormatNumber from '../helpers/formatPrice';
 const Item = ({ item, modalItem, logo }) => {
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
-  const { DESCRIPCION, NUMEROLISTA } = item;
-  const price = `PRECIOLISTA${NUMEROLISTA}`;
+  const { DESCRIPCION, IMPORTE } = item;
 
   useEffect(() => {
     if (modalItem) {
@@ -57,7 +56,7 @@ const Item = ({ item, modalItem, logo }) => {
                   className="text-gray-200 px-20 py-24"
                   style={{ fontSize: 220, fontFamily: 'nunito-regular' }}
                 >
-                  ${FormatNumber(item[price])}
+                  ${FormatNumber(IMPORTE)}
                 </Text>
 
                 <Text

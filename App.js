@@ -1,16 +1,19 @@
 import React, {useEffect, useState} from 'react';
+import * as Network from 'expo-network';
 import * as Font from 'expo-font';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './views/Login';
 import Main from './components/Main';
-import { View } from "react-native";
+import { NativeModules, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 
 const Stack = createStackNavigator();
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+
+
 
    useEffect(() => {
     const loadFonts = () => {

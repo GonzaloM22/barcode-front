@@ -87,12 +87,25 @@ const Main = () => {
       const response = await axios(url, config);
       setArticle(response.data);
       setModalItem(true);
+      setTimeout(() => {
+        setModalItem(false);
+        setArticle({});
+        setArticleNotFound(false);
+      }, 5000);
     } catch (error) {
       if (!error?.response || error?.response?.status === 401) {
         setModalCarousel(false);
         return navigation.navigate('Login');
       } else {
-        if (error?.response?.status === 404) setArticleNotFound(true);
+        if (error?.response?.status === 404) {
+          setArticleNotFound(true);
+
+          setTimeout(() => {
+            setModalItem(false);
+            setArticle({});
+            setArticleNotFound(false);
+          }, 2500);
+        }
         setModalCarousel(false);
         setArticle({});
         setBarcode('');
@@ -100,11 +113,6 @@ const Main = () => {
     } finally {
       setLoading(false);
       setBarcode('');
-      setTimeout(() => {
-        setModalItem(false);
-        setArticle({});
-        setArticleNotFound(false);
-      }, 5000);
     }
   };
 

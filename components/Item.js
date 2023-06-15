@@ -40,7 +40,7 @@ const Item = ({ item, modalItem, logo }) => {
             >
               <>
                 <View className="bg-gray-200 px-10">
-                  {logo && (
+                  {logo ? (
                     <Image
                       source={{ uri: logo }}
                       style={{
@@ -49,6 +49,8 @@ const Item = ({ item, modalItem, logo }) => {
                         height: 150,
                       }}
                     />
+                  ) : (
+                    <Text className='w-48 h-32'></Text>
                   )}
                 </View>
 

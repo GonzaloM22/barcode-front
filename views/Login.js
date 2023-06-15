@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Network } from 'expo';
 import { StatusBar } from 'expo-status-bar';
 import { View, Image } from 'react-native';
 import {
@@ -6,7 +7,6 @@ import {
   Headline,
   Button,
   Paragraph,
-  DefaultTheme,
   HelperText,
   Dialog,
   Portal,

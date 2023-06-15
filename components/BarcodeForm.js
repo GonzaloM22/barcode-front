@@ -2,7 +2,12 @@ import React, { useRef, useState, useEffect } from 'react';
 import { TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const BarcodeForm = ({ setBarcode, barcode, setModalCarousel, handleSubmit }) => {
+const BarcodeForm = ({
+  setBarcode,
+  barcode,
+  setModalCarousel,
+  handleSubmit,
+}) => {
   const textInputRef = useRef(null);
   const [blur, setBlur] = useState(false);
 
@@ -10,13 +15,8 @@ const BarcodeForm = ({ setBarcode, barcode, setModalCarousel, handleSubmit }) =>
 
   useEffect(() => {
     if (blur && barcode === '') setModalCarousel(false);
-    if (textInputRef.current && barcode === '') textInputRef.current.focus()
+    if (textInputRef.current && barcode === '') textInputRef.current.focus();
   }, [barcode, blur]);
-
-  /*const handleSubmit = async () => {     
-    
-    setBarcode(data);}*/
-
 
   return (
     <LinearGradient colors={['#182848', '#182848']}>

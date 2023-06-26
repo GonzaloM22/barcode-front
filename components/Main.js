@@ -39,7 +39,7 @@ const Main = () => {
           timeout: 15000,
         };
 
-        const url = `http://${ipAddress}/api/images`; //IPV4 Address
+        const url = `${ipAddress}/api/images`; //IPV4 Address
         const { data } = await axios(url, config);
         setLogo(data?.logo);
         setImages(data?.carousel);
@@ -83,7 +83,7 @@ const Main = () => {
         },
         timeout: 8000,
       };
-      const url = `http://${ipAddress}/api/article?barcode=${data}`;
+      const url = `${ipAddress}/api/article?barcode=${data}`;
       const response = await axios(url, config);
       setArticle(response.data);
       setModalItem(true);

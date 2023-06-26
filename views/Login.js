@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Network } from 'expo';
 import { StatusBar } from 'expo-status-bar';
 import { View, Image } from 'react-native';
 import {
   TextInput,
   Headline,
   Button,
-  Paragraph,
   HelperText,
-  Dialog,
-  Portal,
   Snackbar,
-  Text,
   Provider as PaperProvider,
   ActivityIndicator,
 } from 'react-native-paper';
@@ -24,21 +19,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Login = () => {
   const [dataLogin, setDataLogin] = useState({
     ipAddress: '',
-    username: '',
-    password: '',
+    username: 'APPPRECIOS',
+    password: 'APPPRECIOS',
   });
   const [loading, setLoading] = useState(false);
   const [loadingLS, setLoadingLs] = useState(false);
   const [fieldEmpty, setFieldEmpty] = useState(false);
   const [networkError, setNetworkError] = useState(false);
   const [sesionExpired, setSesionExpired] = useState(false);
-  const [userError, setUserError] = useState(false);
   //const image = require('../assets/logo.png');
   const navigation = useNavigation();
   const { ipAddress, username, password } = dataLogin;
 
   useEffect(() => {
-
     const settIpAddress = async () => {
       const ipAddressLS = await AsyncStorage.getItem('ipAddress');
       if (ipAddressLS) setDataLogin({ ...dataLogin, ipAddress: ipAddressLS });
@@ -52,7 +45,7 @@ const Login = () => {
         const tknLS = await AsyncStorage.getItem('token');
 
         if (tknLS && ipAddressLS) {
-          const url = `http://${ipAddressLS}/api/profile`;
+          const url = `${ipAddressLS}/api/profile`;
 
           const config = {
             headers: {
@@ -89,7 +82,7 @@ const Login = () => {
       if (ipAddress === '' || username === '' || password === '')
         return setFieldEmpty(true);
 
-      const url = `http://${ipAddress}/api/auth`; //IPV4 Address
+      const url = `${ipAddress}/api/auth`; //IPV4 Address
       const { data } = await axios.post(
         url,
         {
@@ -106,14 +99,10 @@ const Login = () => {
       await AsyncStorage.setItem('ipAddress', ipAddress);
       await AsyncStorage.setItem('token', data?.token);
     } catch (error) {
-      if (error?.response?.status === 404) return setUserError(true);
       setNetworkError(true);
     } finally {
       setLoading(false);
- 
     }
-
- 
   };
 
   return (
@@ -124,10 +113,7 @@ const Login = () => {
           <ActivityIndicator color="#343434" size={70} animating={loadingLS} />
         </View>
       ) : (
-        <LinearGradient
-          colors={['#4b6cb7', '#182848']}
-          className="flex-1 pt-12"
-        >
+        <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1">
           <Snackbar
             visible={networkError || sesionExpired}
             onDismiss={() => {
@@ -141,12 +127,12 @@ const Login = () => {
               ? 'Error de conexión con el servidor'
               : 'Sesión vencida, inicie sesión nuevamente'}
           </Snackbar>
-          <KeyboardAwareScrollView style={{ flex: 1 }}>
+          <KeyboardAwareScrollView contentContainerStyle={{flex: 1, justifyContent: 'center'}}>
             <View
               className="bg-gray-100 px-8 pb-14 pt-6 rounded-xl shadow-xl mx-auto"
               style={{ width: 500 }}
             >
-              <Headline className="text-4xl text-center mb-8 w-32 mx-auto">
+              <Headline className="text-4xl text-center mb-8 mx-auto">
                 Iniciar Sesión
               </Headline>
               {/*<Image
@@ -161,7 +147,7 @@ const Login = () => {
               <TextInput
                 mode="outlined"
                 label="Dirección IP"
-                placeholder="Número de ip: puerto"
+                placeholder="Número de IP: puerto"
                 keyboardType="url"
                 onChangeText={(val) =>
                   setDataLogin({ ...dataLogin, ipAddress: val })
@@ -171,32 +157,6 @@ const Login = () => {
               <HelperText type="error" visible={fieldEmpty && ipAddress === ''}>
                 Dirección IP es obligatorio
               </HelperText>
-              <TextInput
-                mode="outlined"
-                label="Usuario"
-                placeholder="Nombre de Usuario ERP"
-                onChangeText={(val) =>
-                  setDataLogin({ ...dataLogin, username: val })
-                }
-                value={username}
-              />
-              <HelperText type="error" visible={fieldEmpty && username === ''}>
-                Usuario es obligatorio
-              </HelperText>
-              <TextInput
-                mode="outlined"
-                label="Contraseña"
-                placeholder="Contraseña ERP"
-                secureTextEntry
-                onChangeText={(val) =>
-                  setDataLogin({ ...dataLogin, password: val })
-                }
-                value={password}
-              />
-              <HelperText type="error" visible={fieldEmpty && password === ''}>
-                Contraseña es obligatorio
-              </HelperText>
-
               <Button
                 className="rounded-xl"
                 buttonColor="#4b6cb7"
@@ -207,26 +167,6 @@ const Login = () => {
               >
                 Ingresar
               </Button>
-
-              <Portal>
-                <Dialog
-                  visible={userError}
-                  onDismiss={() => setUserError(false)}
-                  style={{ width: 350, alignSelf: 'center' }}
-                  className="rounded-2xl px-2 bg-gray-100"
-                >
-                  <Dialog.Title>Error</Dialog.Title>
-
-                  <Dialog.Content>
-                    <Text variant="bodyMedium">
-                      Usuario o contraseña incorrectos
-                    </Text>
-                  </Dialog.Content>
-                  <Dialog.Actions>
-                    <Button onPress={() => setUserError(false)}>Aceptar</Button>
-                  </Dialog.Actions>
-                </Dialog>
-              </Portal>
             </View>
           </KeyboardAwareScrollView>
         </LinearGradient>

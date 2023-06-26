@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "barcode",
-    "slug": "barcode",
+    "name": "Flx - Precios",
+    "slug": "Flx - Precios",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

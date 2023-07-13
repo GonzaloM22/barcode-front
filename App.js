@@ -1,23 +1,21 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Font from 'expo-font';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './views/Login';
 import Main from './components/Main';
-import { View } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
+import { View, Image, Text } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
 
 const Stack = createStackNavigator();
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
-
-
-   useEffect(() => {
-    const loadFonts = () => {
-      Font.loadAsync({
-        'nunito-regular': require('./assets/Nunito-Regular.ttf'),
+  useEffect(() => {
+    const loadFonts = async () => {
+      await Font.loadAsync({
+        'plus-jakarta': require('./assets/PlusJakartaSans-Medium.ttf'),
       });
       setFontsLoaded(true);
     };
@@ -53,6 +51,16 @@ const App = () => {
           }}
         />
       </Stack.Navigator>
+      <View className="flex flex-row justify-end items-center bg-secondary-dark w-full p-1 pr-2">
+        <Text className="text-gray-200" style={{ fontFamily: 'plus-jakarta' }}>
+          Desarrollado por
+        </Text>
+        <Image
+          source={require('./assets/Flexxus-Fondo-Negro.png')}
+          style={{ width: 70, height: 14 }}
+          resizeMode="contain"
+        />
+      </View>
     </NavigationContainer>
   );
 };

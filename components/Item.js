@@ -56,14 +56,14 @@ const Item = ({ item, modalItem, logo }) => {
 
                 <Text
                   className="text-gray-200 px-20 py-24"
-                  style={{ fontSize: 220, fontFamily: 'nunito-regular' }}
+                  style={{ fontSize: 220, fontFamily: 'plus-jakarta' }}
                 >
                   ${FormatNumber(IMPORTE)}
                 </Text>
 
                 <Text
                   className="text-5xl text-zinc-700 bg-gray-100 pl-10 pr-2 py-10"
-                  style={{ fontFamily: 'nunito-regular' }}
+                  style={{ fontFamily: 'plus-jakarta' }}
                 >
                   {DESCRIPCION}
                 </Text>

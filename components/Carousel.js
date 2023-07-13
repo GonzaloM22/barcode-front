@@ -3,11 +3,13 @@ import {
   FlatList,
   Image,
   View,
+  Text,
   useWindowDimensions,
   TouchableWithoutFeedback,
 } from 'react-native';
 import BarcodeForm from './BarcodeForm';
 import { Modal, Portal, PaperProvider, ActivityIndicator } from 'react-native-paper';
+import { SimpleLineIcons  } from '@expo/vector-icons';
 
 const Carousel = ({
   barcode,
@@ -52,7 +54,7 @@ const Carousel = ({
         <PaperProvider>
           <Portal>
             <Modal visible={true} className="bg-gray-100 flex-1">
-              <View>
+              <View className="h-52">
                 <FlatList
                   ref={flatListRef}
                   horizontal
@@ -73,15 +75,24 @@ const Carousel = ({
                             source={{ uri: item.image }}
                             style={{
                               width,
-                              resizeMode: 'contain',
                               height: '100%',
                             }}
+                            resizeMode="contain"
                           />
                         </View>
                       </TouchableWithoutFeedback>
                     );
                   }}
                 />
+              </View>
+              <View className="flex items-center mt-4">
+                <Text
+                  className="text-3xl text-center text-primary-dark"
+                  style={{ fontFamily: 'plus-jakarta' }}
+                >
+                  Escaneá tu producto
+                </Text>
+                <SimpleLineIcons name="arrow-down" size={70} color="#343434"/>
               </View>
             </Modal>
           </Portal>
@@ -95,7 +106,11 @@ const Carousel = ({
       ) : (
         <TouchableWithoutFeedback onPressIn={() => setModalCarousel(false)}>
           <View className="h-screen flex justify-center bg-gray-100">
-            <ActivityIndicator color="#343434" size={50} animating={loadingImages} />
+            <ActivityIndicator
+              color="#343434"
+              size={50}
+              animating={loadingImages}
+            />
           </View>
         </TouchableWithoutFeedback>
       )}

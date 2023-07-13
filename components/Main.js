@@ -1,10 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Text, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
-import { ChevronDownIcon } from 'react-native-heroicons/solid';
+import { MaterialCommunityIcons  } from '@expo/vector-icons';
 import axios from 'axios';
 import Item from './Item';
 import Carousel from './Carousel';
@@ -131,40 +130,45 @@ const Main = () => {
 
       {!modalCarousel && !Object.keys(article).length > 0 ? (
         <>
-          <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1">
-            <View className="flex justify-center items-center h-screen">
-              <View>
-                {loading ? (
-                  <ActivityIndicator
-                    animating={loading}
-                    color="rgb(229 231 235)"
-                    size={70}
-                  />
-                ) : !articleNotFound ? (
-                  <View>
-                    <>
-                      <Text
-                        className="text-9xl text-center text-gray-200 pt-52"
-                        style={{ fontFamily: 'nunito-regular' }}
-                      >
-                        Escanee su producto aqui
-                      </Text>
-                      <View className="items-center mt-8">
-                        <ChevronDownIcon fill="#FFFFFF" size={250} />
-                      </View>
-                    </>
-                  </View>
-                ) : (
-                  <Text
-                    className="text-9xl text-center text-gray-200"
-                    style={{ fontFamily: 'nunito-regular' }}
-                  >
-                    No hay resultados
-                  </Text>
-                )}
-              </View>
+          <View className="flex justify-center items-center h-screen bg-primary-dark">
+            <View>
+              {loading ? (
+                <ActivityIndicator
+                  animating={loading}
+                  color="rgb(229 231 235)"
+                  size={70}
+                />
+              ) : !articleNotFound ? (
+                <View className="h-full flex justify-center">
+                  <>
+                    <Text
+                      className="text-9xl text-center text-gray-200"
+                      style={{ fontFamily: 'plus-jakarta' }}
+                    >
+                      Escaneá tu producto
+                    </Text>
+                    <View className="mx-auto">
+                      <MaterialCommunityIcons
+                        name="barcode-scan"
+                        size={200}
+                        color="#FFF"
+                      />
+                    </View>
+                  </>
+                </View>
+              ) : (
+                <Text
+                  className="text-9xl text-center text-gray-200"
+                  style={{ fontFamily: 'plus-jakarta' }}
+                >
+                  No hay resultados
+                </Text>
+              )}
             </View>
-          </LinearGradient>
+
+            
+          </View>
+
           <BarcodeForm
             barcode={barcode}
             setBarcode={setBarcode}

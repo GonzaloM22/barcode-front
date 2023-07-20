@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { TextInput } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, TextInput } from 'react-native';
 
 const BarcodeForm = ({
   setBarcode,
@@ -19,7 +18,7 @@ const BarcodeForm = ({
   }, [barcode, blur]);
 
   return (
-    <LinearGradient colors={['#182848', '#182848']}>
+    <View className="bg-gray-100">
       <TextInput
         ref={textInputRef}
         value={barcode}
@@ -31,7 +30,7 @@ const BarcodeForm = ({
         onSubmitEditing={() => handleSubmit(barcode)}
         onBlur={handleBlur}
       />
-    </LinearGradient>
+    </View>
   );
 };
 

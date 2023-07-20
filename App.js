@@ -51,6 +51,7 @@ const App = () => {
           }}
         />
       </Stack.Navigator>
+
       <View className="flex flex-row justify-end items-center bg-secondary-dark w-full p-1 pr-2">
         <Text className="text-gray-200" style={{ fontFamily: 'plus-jakarta' }}>
           Desarrollado por

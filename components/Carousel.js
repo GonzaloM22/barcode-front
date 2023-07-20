@@ -53,8 +53,8 @@ const Carousel = ({
       {!loadingImages ? (
         <PaperProvider>
           <Portal>
-            <Modal visible={true} className="bg-gray-100 flex-1">
-              <View className="h-52">
+            <Modal visible={true} className="bg-gray-100 h-[650px]">
+              <View className="h-screen">
                 <FlatList
                   ref={flatListRef}
                   horizontal
@@ -74,7 +74,7 @@ const Carousel = ({
                           <Image
                             source={{ uri: item.image }}
                             style={{
-                              width,
+                              //width,
                               height: '100%',
                             }}
                             resizeMode="contain"
@@ -85,9 +85,9 @@ const Carousel = ({
                   }}
                 />
               </View>
-              <View className="flex items-center mt-4">
+              <View className="flex items-center space-y-4 pt-10 bg-gray-100 h-[300px]">
                 <Text
-                  className="text-3xl text-center text-primary-dark"
+                  className="text-5xl text-center text-primary-dark"
                   style={{ fontFamily: 'plus-jakarta' }}
                 >
                   Escaneá tu producto

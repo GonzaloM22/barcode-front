@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { View, Image, Animated } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Modal, Portal, Text, PaperProvider } from 'react-native-paper';
 import FormatNumber from '../helpers/formatPrice';
 
 const Item = ({ item, modalItem, logo }) => {
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
-  const { DESCRIPCION, IMPORTE } = item;
+  const { CODIGO_ARTICULO, DESCRIPCION, RUBRO, IMPORTE, IMPORTEOFERTA, PORC_DESCUENTO } = item;
+
+  const hasDiscount = IMPORTEOFERTA === 0
 
   useEffect(() => {
     if (modalItem) {
@@ -34,41 +35,85 @@ const Item = ({ item, modalItem, logo }) => {
           animationType="none"
         >
           <Animated.View style={{ opacity: fadeAnimation, flex: 1 }}>
-            <LinearGradient
-              colors={['#4b6cb7', '#182848']}
-              className="flex-1 justify-between"
-            >
+            <View className="bg-gray-100 h-full">
               <>
-                <View className="bg-gray-200 px-10">
-                  {logo ? (
+                <View className="items-end pt-4 pr-14">
+                  <Image
+                    source={{ uri: logo }}
+                    style={{
+                      resizeMode: 'contain',
+                      width: 220,
+                      height: 150,
+                    }}
+                  />
+                </View>
+                <View className="pl-20 h-[450px]">
+                  <Text
+                    className="text-5xl text-zinc-700 capitalize"
+                    style={{ fontFamily: 'plus-jakarta' }}
+                  >
+                    {DESCRIPCION.toLowerCase()}
+                  </Text>
+                  <View className="flex flex-row items-center">
+                    <View className="space-y-8 mr-28">
+                      {!hasDiscount && (
+                        <>
+                          <Text
+                            className="text-2xl text-gray-200 bg-zinc-700 w-44 py-2 text-center rounded-full shadow-lg"
+                            style={{ fontFamily: 'plus-jakarta' }}
+                          >
+                            OFERTA
+                          </Text>
+
+                          <View className="flex flex-row space-x-10 mt-10">
+                            <Text
+                              className="text-zinc-700 text-4xl line-through"
+                              style={{ fontFamily: 'plus-jakarta' }}
+                            >
+                               ${hasDiscount ? FormatNumber(IMPORTEOFERTA) : FormatNumber(IMPORTE)}
+                            </Text>
+                            <Text
+                              className="text-[#008d36] text-4xl"
+                              style={{ fontFamily: 'plus-jakarta' }}
+                            >
+                              {Math.ceil(PORC_DESCUENTO)} % OFF
+                            </Text>
+                          </View>
+                        </>
+                      )}
+                      <Text
+                        className="text-[#4877ff] text-[100px]"
+                        style={{ fontFamily: 'plus-jakarta' }}
+                      >
+                        ${!hasDiscount ? FormatNumber(IMPORTEOFERTA) : FormatNumber(IMPORTE)}
+                      </Text>
+                      <View>
+                        <Text
+                          className="text-zinc-700 text-lg capitalize"
+                          style={{ fontFamily: 'plus-jakarta' }}
+                        >
+                          Rubro: {RUBRO.toLowerCase()}
+                        </Text>
+                        <Text
+                          className="text-zinc-700 text-lg"
+                          style={{ fontFamily: 'plus-jakarta' }}
+                        >
+                          SKU: {CODIGO_ARTICULO}
+                        </Text>
+                      </View>
+                    </View>
                     <Image
-                      source={{ uri: logo }}
+                      source={require('../assets/zapatilla-nike.png')}
                       style={{
                         resizeMode: 'contain',
-                        width: 220,
-                        height: 150,
+                        width: 600,
+                        height: 500,
                       }}
                     />
-                  ) : (
-                    <Text className='w-48 h-32'></Text>
-                  )}
+                  </View>
                 </View>
-
-                <Text
-                  className="text-gray-200 px-20 py-24"
-                  style={{ fontSize: 220, fontFamily: 'plus-jakarta' }}
-                >
-                  ${FormatNumber(IMPORTE)}
-                </Text>
-
-                <Text
-                  className="text-5xl text-zinc-700 bg-gray-100 pl-10 pr-2 py-10"
-                  style={{ fontFamily: 'plus-jakarta' }}
-                >
-                  {DESCRIPCION}
-                </Text>
               </>
-            </LinearGradient>
+            </View>
           </Animated.View>
         </Modal>
       </Portal>

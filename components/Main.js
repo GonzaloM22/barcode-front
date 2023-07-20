@@ -130,7 +130,7 @@ const Main = () => {
 
       {!modalCarousel && !Object.keys(article).length > 0 ? (
         <>
-          <View className="flex justify-center items-center h-screen bg-primary-dark">
+          <View className="flex justify-center items-center h-full bg-primary-dark">
             <View>
               {loading ? (
                 <ActivityIndicator
@@ -142,7 +142,7 @@ const Main = () => {
                 <View className="h-full flex justify-center">
                   <>
                     <Text
-                      className="text-9xl text-center text-gray-200"
+                      className="text-9xl text-center text-gray-200 w-[700px]"
                       style={{ fontFamily: 'plus-jakarta' }}
                     >
                       Escaneá tu producto

@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
 } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -113,7 +112,7 @@ const Login = () => {
           <ActivityIndicator color="#343434" size={70} animating={loadingLS} />
         </View>
       ) : (
-        <LinearGradient colors={['#4b6cb7', '#182848']} className="flex-1">
+        <View className="flex-1 bg-zinc-700">
           <Snackbar
             visible={networkError || sesionExpired}
             onDismiss={() => {
@@ -129,10 +128,10 @@ const Login = () => {
           </Snackbar>
           <KeyboardAwareScrollView contentContainerStyle={{flex: 1, justifyContent: 'center'}}>
             <View
-              className="bg-gray-100 px-8 pb-14 pt-6 rounded-xl shadow-xl mx-auto"
+              className="bg-gray-50 px-8 pb-14 pt-6 rounded-xl shadow-xl mx-auto"
               style={{ width: 500 }}
             >
-              <Headline className="text-4xl text-center mb-8 mx-auto">
+              <Headline className="text-4xl text-center mb-8 pt-4 mx-auto">
                 Iniciar Sesión
               </Headline>
               {/*<Image
@@ -169,7 +168,7 @@ const Login = () => {
               </Button>
             </View>
           </KeyboardAwareScrollView>
-        </LinearGradient>
+        </View>
       )}
     </PaperProvider>
   );

@@ -20,6 +20,7 @@ const Main = () => {
   const [modalItem, setModalItem] = useState(false);
   const [showCarousel, setShowCarousel] = useState(false);
   const [images, setImages] = useState({});
+  const [productImages, setProductImages] = useState([]);
   const [sliderTime, setSliderTime] = useState(30000);
   const [logo, setLogo] = useState(null);
   const [loadingImages, setLoadingImages] = useState(true);
@@ -27,7 +28,7 @@ const Main = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const getImages = async () => {
+    const getSliderImages = async () => {
       try {
         setLoadingImages(true);
         const config = {
@@ -52,7 +53,29 @@ const Main = () => {
         navigation.navigate('Login');
       }
     };
-    if (token && ipAddress) getImages();
+
+    const getProductImages = async () => {
+      try {
+        const config = {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          timeout: 15000,
+        };
+
+        const url = `${ipAddress}/api/productimages`; //IPV4 Address
+        const { data } = await axios(url, config);
+
+        setProductImages(data);
+      } catch (error) {
+        navigation.navigate('Login');
+      }
+    };
+    if (token && ipAddress) {
+      getProductImages();
+      getSliderImages();
+    }
   }, [token, ipAddress]);
 
   useEffect(() => {
@@ -124,6 +147,7 @@ const Main = () => {
           loading={loading}
           item={article}
           modalItem={modalItem}
+          productImages={productImages}
           logo={logo}
         />
       )}

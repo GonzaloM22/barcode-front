@@ -1,14 +1,33 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View, Image, Animated } from 'react-native';
 import { Modal, Portal, Text, PaperProvider } from 'react-native-paper';
 import FormatNumber from '../helpers/formatPrice';
 
-const Item = ({ item, modalItem, logo }) => {
+const Item = ({ item, modalItem, productImages, logo }) => {
+  const [productImagePath, setProductImagePath] = useState(null);
   const fadeAnimation = useRef(new Animated.Value(0)).current;
 
-  const { CODIGO_ARTICULO, DESCRIPCION, RUBRO, IMPORTE, IMPORTEOFERTA, PORC_DESCUENTO } = item;
+  const {
+    CODIGO_ARTICULO,
+    DESCRIPCION,
+    RUBRO,
+    IMPORTE,
+    IMPORTEOFERTA,
+    PORC_DESCUENTO,
+  } = item;
 
-  const hasDiscount = IMPORTEOFERTA === 0
+  const hasDiscount = IMPORTEOFERTA === 0;
+
+  useEffect(() => {
+    const imagePath = productImages.find(
+      (product) => product.filename === CODIGO_ARTICULO
+    );
+    if (imagePath) {
+      setProductImagePath(imagePath?.image);
+    } else {
+      setProductImagePath(null);
+    }
+  }, [CODIGO_ARTICULO]);
 
   useEffect(() => {
     if (modalItem) {
@@ -70,7 +89,10 @@ const Item = ({ item, modalItem, logo }) => {
                               className="text-zinc-700 text-4xl line-through"
                               style={{ fontFamily: 'plus-jakarta' }}
                             >
-                               ${hasDiscount ? FormatNumber(IMPORTEOFERTA) : FormatNumber(IMPORTE)}
+                              $
+                              {hasDiscount
+                                ? FormatNumber(IMPORTEOFERTA)
+                                : FormatNumber(IMPORTE)}
                             </Text>
                             <Text
                               className="text-[#008d36] text-4xl"
@@ -85,7 +107,10 @@ const Item = ({ item, modalItem, logo }) => {
                         className="text-[#4877ff] text-[100px]"
                         style={{ fontFamily: 'plus-jakarta' }}
                       >
-                        ${!hasDiscount ? FormatNumber(IMPORTEOFERTA) : FormatNumber(IMPORTE)}
+                        $
+                        {!hasDiscount
+                          ? FormatNumber(IMPORTEOFERTA)
+                          : FormatNumber(IMPORTE)}
                       </Text>
                       <View>
                         <Text
@@ -102,14 +127,16 @@ const Item = ({ item, modalItem, logo }) => {
                         </Text>
                       </View>
                     </View>
-                    <Image
-                      source={require('../assets/zapatilla-nike.png')}
-                      style={{
-                        resizeMode: 'contain',
-                        width: 600,
-                        height: 500,
-                      }}
-                    />
+                    {productImagePath && (
+                      <Image
+                        source={{ uri: productImagePath }}
+                        style={{
+                          resizeMode: 'contain',
+                          width: 600,
+                          height: 500,
+                        }}
+                      />
+                    )}
                   </View>
                 </View>
               </>

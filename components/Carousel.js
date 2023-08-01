@@ -8,8 +8,13 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import BarcodeForm from './BarcodeForm';
-import { Modal, Portal, PaperProvider, ActivityIndicator } from 'react-native-paper';
-import { SimpleLineIcons  } from '@expo/vector-icons';
+import {
+  Modal,
+  Portal,
+  PaperProvider,
+  ActivityIndicator,
+} from 'react-native-paper';
+import { SimpleLineIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Carousel = ({
   barcode,
@@ -85,14 +90,15 @@ const Carousel = ({
                   }}
                 />
               </View>
-              <View className="flex items-center space-y-4 pt-10 bg-gray-100 h-[300px]">
-                <Text
-                  className="text-5xl text-center text-primary-dark"
-                  style={{ fontFamily: 'plus-jakarta' }}
-                >
-                  Escaneá tu producto
-                </Text>
-                <SimpleLineIcons name="arrow-down" size={70} color="#343434"/>
+              <View className="flex items-center space-y-2 justify-center bg-[#343434] h-[150px]">
+                <View>
+                  <MaterialCommunityIcons
+                    name="barcode-scan"
+                    size={80}
+                    color="#FFF"
+                  />
+                </View>
+                <SimpleLineIcons name="arrow-down" size={40} color="#FFF"/>
               </View>
             </Modal>
           </Portal>

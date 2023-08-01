@@ -20,7 +20,8 @@ const Item = ({ item, modalItem, productImages, logo }) => {
 
   useEffect(() => {
     const imagePath = productImages.find(
-      (product) => product.filename === CODIGO_ARTICULO
+      (product) =>
+        product?.filename?.toLowerCase() === CODIGO_ARTICULO?.toLowerCase()
     );
     if (imagePath) {
       setProductImagePath(imagePath?.image);
@@ -56,7 +57,7 @@ const Item = ({ item, modalItem, productImages, logo }) => {
           <Animated.View style={{ opacity: fadeAnimation, flex: 1 }}>
             <View className="bg-gray-100 h-full">
               <>
-                <View className="items-end pt-4 pr-14">
+                <View className="items-end pt-10 pr-24">
                   <Image
                     source={{ uri: logo }}
                     style={{
@@ -68,7 +69,7 @@ const Item = ({ item, modalItem, productImages, logo }) => {
                 </View>
                 <View className="pl-20 h-[450px]">
                   <Text
-                    className="text-5xl text-zinc-700 capitalize"
+                    className="text-6xl text-zinc-700 capitalize mb-8 w-[1100px]"
                     style={{ fontFamily: 'plus-jakarta' }}
                   >
                     {DESCRIPCION.toLowerCase()}
@@ -78,7 +79,7 @@ const Item = ({ item, modalItem, productImages, logo }) => {
                       {!hasDiscount && (
                         <>
                           <Text
-                            className="text-2xl text-gray-200 bg-zinc-700 w-44 py-2 text-center rounded-full shadow-lg"
+                            className="text-2xl text-gray-200 bg-zinc-700 w-60 py-2 text-center rounded-full shadow-md"
                             style={{ fontFamily: 'plus-jakarta' }}
                           >
                             OFERTA
@@ -128,14 +129,16 @@ const Item = ({ item, modalItem, productImages, logo }) => {
                       </View>
                     </View>
                     {productImagePath && (
-                      <Image
-                        source={{ uri: productImagePath }}
-                        style={{
-                          resizeMode: 'contain',
-                          width: 600,
-                          height: 500,
-                        }}
-                      />
+                      <View className="mx-auto">
+                        <Image
+                          source={{ uri: productImagePath }}
+                          style={{
+                            resizeMode: 'contain',
+                            width: 400,
+                            height: 480,
+                          }}
+                        />
+                      </View>
                     )}
                   </View>
                 </View>

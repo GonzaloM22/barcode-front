@@ -49,8 +49,8 @@ const Main = () => {
         setShowCarousel(true);
       } catch (error) {
         if (error?.response?.status === 404) return setShowCarousel(false);
-
-        navigation.navigate('Login');
+        if (error?.response?.status === 401) return navigation.navigate('Login');
+       
       }
     };
 
@@ -69,7 +69,7 @@ const Main = () => {
 
         setProductImages(data);
       } catch (error) {
-        navigation.navigate('Login');
+        if (error?.response?.status === 401) return navigation.navigate('Login');
       }
     };
     if (token && ipAddress) {

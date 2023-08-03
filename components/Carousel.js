@@ -90,15 +90,18 @@ const Carousel = ({
                   }}
                 />
               </View>
-              <View className="flex items-center space-y-2 justify-center bg-[#343434] h-[150px]">
-                <View>
+              <View className="flex items-center justify-center bg-[#343434] h-[150px]">
+                <View className="mt-2">
                   <MaterialCommunityIcons
                     name="barcode-scan"
                     size={80}
                     color="#FFF"
                   />
                 </View>
-                <SimpleLineIcons name="arrow-down" size={40} color="#FFF"/>
+
+                <View className="mb-6">
+                <SimpleLineIcons name="arrow-down" size={40} color="#FFF" />
+                </View>
               </View>
             </Modal>
           </Portal>

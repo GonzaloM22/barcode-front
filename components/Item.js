@@ -63,13 +63,13 @@ const Item = ({ item, modalItem, productImages, logo }) => {
                     style={{
                       resizeMode: 'contain',
                       width: 220,
-                      height: 150,
+                      height: 100,
                     }}
                   />
                 </View>
                 <View className="pl-20 h-[450px]">
                   <Text
-                    className="text-6xl text-zinc-700 capitalize mb-8 w-[1100px]"
+                    className="text-5xl text-zinc-700 capitalize mb-4 w-[900px]"
                     style={{ fontFamily: 'plus-jakarta' }}
                   >
                     {DESCRIPCION.toLowerCase()}
@@ -79,7 +79,7 @@ const Item = ({ item, modalItem, productImages, logo }) => {
                       {!hasDiscount && (
                         <>
                           <Text
-                            className="text-2xl text-gray-200 bg-zinc-700 w-60 py-2 text-center rounded-full shadow-md"
+                            className="text-2xl text-gray-100 bg-zinc-700 w-60 py-2 text-center rounded-full shadow-md"
                             style={{ fontFamily: 'plus-jakarta' }}
                           >
                             OFERTA
@@ -135,7 +135,8 @@ const Item = ({ item, modalItem, productImages, logo }) => {
                           style={{
                             resizeMode: 'contain',
                             width: 400,
-                            height: 480,
+                            height: 450,
+                            paddingBottom: 100
                           }}
                         />
                       </View>
